@@ -32,6 +32,8 @@ src/
 docs/                      # Report notes, screenshots, demo video links
 ```
 
+Quick command reference (build, run, test, troubleshooting): [COMMANDS.md](COMMANDS.md)
+
 ## Installation
 
 ```bash
