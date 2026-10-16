@@ -59,6 +59,51 @@ Notes:
 
 - LiDAR on top (360°), sonar at the front, IMU inside the chassis near the center.
 
+### Dimensions (agreed 2026-10-16)
+
+Units: m, kg. Frames follow REP-103 (x forward, y left, z up). Right side = −y.
+
+| Part | Shape / size | Pose (relative to parent) | Mass |
+|------|--------------|---------------------------|------|
+| `base_footprint` | – (ground projection) | – | – |
+| `base_link` | – (at wheel axle height) | z = 0.075 from `base_footprint` | – |
+| `chassis` | box 0.55 × 0.25 × 0.15 | z = +0.04 from `base_link` (≈ 4 cm ground clearance) | 8.0 |
+| 4 × wheel | cylinder r = 0.075, width 0.05 | x = ±0.18, y = ±0.15, z = 0 | 0.5 each |
+| `lidar_link` | cylinder r = 0.04, h = 0.05 on a short mast | x = 0.10, z ≈ 0.27 (≈ 0.35 m above ground) | 0.2 |
+| `camera_link` | box 0.03 × 0.08 × 0.03 on a side mast | x = 0.0, y = −0.15, z ≈ 0.33 (≈ 0.40 m above ground), yaw = −90° (looks right) | 0.1 |
+| `sonar_link` | box 0.02 × 0.05 × 0.03 | x = 0.285, z ≈ 0.05 (front face) | 0.05 |
+| `imu_link` | – | at `base_link` origin | – |
+
+Derived values:
+- Total width 0.35 (wheels outside the 0.25 chassis), length 0.55
+- Wheel separation 0.30, wheelbase 0.36, wheel radius 0.075
+- LiDAR sits at plant height on purpose so the scan hits the row (not above it)
+
+TF tree:
+
+```
+base_footprint → base_link ─┬─ chassis
+                            ├─ front_left_wheel / front_right_wheel / rear_left_wheel / rear_right_wheel
+                            ├─ lidar_link
+                            ├─ camera_link → camera_optical_link
+                            ├─ sonar_link
+                            └─ imu_link
+odom → base_footprint   (from DiffDrive odometry)
+```
+
+### World layout (agreed values)
+
+| Parameter | Value |
+|-----------|-------|
+| Rows | 3 parallel planter rows (→ 2 aisles) |
+| Row length | 6.0 |
+| Row (planter) width | 0.4, plants 0.6–1.0 tall |
+| Aisle width | 1.0 → row pitch 1.4 |
+| U-turn arc radius | ≈ 0.7 (half the pitch) |
+| Headland (free space at row ends) | ≥ 1.5 |
+| Fruit | red spheres (ripe) + green spheres (unripe), r ≈ 0.04, at 0.3–0.6 height |
+| Target distance robot center → right row face | ≈ 0.45 |
+
 ## World (to be built)
 
 - 2–3 parallel rows of plant models (green cylinders/boxes), red and green spheres as fruit
