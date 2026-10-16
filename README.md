@@ -69,4 +69,5 @@ Launch arguments: `rviz:=false`, `headless:=true` (no Gazebo GUI), `x:=` / `y:=`
 | Sensor type | Topic | Message type | Visualization | Responsible |
 |-------------|-------|--------------|---------------|-------------|
 | 2D LiDAR    | `/scan` | `sensor_msgs/msg/LaserScan` | RViz (LaserScan) | TODO |
+| IMU         | `/imu`  | `sensor_msgs/msg/Imu`       | RViz (rviz_imu_plugin), rqt_plot | TODO |
 | TODO        | TODO  | TODO         | TODO          | TODO        |

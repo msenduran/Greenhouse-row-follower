@@ -12,7 +12,7 @@ and continues along the next row. It stops if something blocks its path.
 |--------|------------------|-----------------------|--------------|---------------|
 | 2D LiDAR | Distance to the row (P-control), end-of-row detection | `/scan` (10 Hz, 360 samples, 0.20–8 m; idx back=0, right=90, front=180, left=270) | `sensor_msgs/msg/LaserScan` | RViz LaserScan |
 | Camera (right side) | Ripe (red) fruit detection (HSV mask) | `/camera/image_raw` | `sensor_msgs/msg/Image` | rqt_image_view / RViz Image (+ debug mask image) |
-| IMU | Heading (yaw) to finish the 180° arc U-turn, tilt monitoring | `/imu` | `sensor_msgs/msg/Imu` | RViz Imu plugin / rqt_plot |
+| IMU | Heading (yaw) to finish the 180° arc U-turn, tilt monitoring | `/imu` (100 Hz; orientation is relative to the spawn heading → use yaw *change*) | `sensor_msgs/msg/Imu` | RViz Imu plugin / rqt_plot |
 | Sonar (range) | Front obstacle → emergency stop | `/sonar/front` | `sensor_msgs/msg/Range` | RViz Range |
 
 Notes:

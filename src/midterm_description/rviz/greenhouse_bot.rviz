@@ -46,6 +46,27 @@ Visualization Manager:
       Color: 255; 60; 60
       Decay Time: 0
       Value: true
+    - Class: rviz_imu_plugin/Imu
+      Name: IMU
+      Enabled: true
+      Topic:
+        Value: /imu
+        Reliability Policy: Best Effort
+      fixed_frame_orientation: true
+      Box properties:
+        Enable box: true
+        x_scale: 0.3
+        y_scale: 0.15
+        z_scale: 0.05
+        alpha: 0.4
+        color: 30; 80; 200
+      Axes properties:
+        Enable axes: true
+        Axes scale: 0.4
+        Axes alpha: 1
+      Acceleration properties:
+        Enable acceleration: false
+      Value: true
   Enabled: true
   Global Options:
     Fixed Frame: odom

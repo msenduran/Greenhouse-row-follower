@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<!--
+  IMU inside the chassis, at the robot's rotation center (base_link origin, chassis height).
+  Data: /imu (sensor_msgs/msg/Imu), frame imu_link. Used for the yaw angle during U-turns
+  (skid-steer wheel odometry is unreliable while turning).
+-->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <link name="imu_link">
+    <!-- Small board, visible through the top plate only in RViz (inside the chassis) -->
+    <visual>
+      <geometry><box size="0.04 0.03 0.005"/></geometry>
+      <material name="imu_blue"><color rgba="0.1 0.3 0.8 1.0"/></material>
+    </visual>
+    <xacro:box_inertia m="0.01" x="0.04" y="0.03" z="0.005">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </xacro:box_inertia>
+  </link>
+
+  <joint name="imu_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="imu_link"/>
+    <origin xyz="0 0 ${chassis_z}" rpy="0 0 0"/>
+  </joint>
+
+  <gazebo reference="imu_link">
+    <sensor name="imu" type="imu">
+      <topic>imu</topic>
+      <gz_frame_id>imu_link</gz_frame_id>
+      <update_rate>100</update_rate>
+      <always_on>true</always_on>
+      <visualize>false</visualize>
+      <imu>
+        <angular_velocity>
+          <x><noise type="gaussian"><mean>0.0</mean><stddev>0.002</stddev></noise></x>
+          <y><noise type="gaussian"><mean>0.0</mean><stddev>0.002</stddev></noise></y>
+          <z><noise type="gaussian"><mean>0.0</mean><stddev>0.002</stddev></noise></z>
+        </angular_velocity>
+        <linear_acceleration>
+          <x><noise type="gaussian"><mean>0.0</mean><stddev>0.02</stddev></noise></x>
+          <y><noise type="gaussian"><mean>0.0</mean><stddev>0.02</stddev></noise></y>
+          <z><noise type="gaussian"><mean>0.0</mean><stddev>0.02</stddev></noise></z>
+        </linear_acceleration>
+      </imu>
+    </sensor>
+  </gazebo>
+
+</robot>
