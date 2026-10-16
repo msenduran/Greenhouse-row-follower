@@ -65,7 +65,7 @@ ros2 run rqt_image_view rqt_image_view /fruit_detector/debug_image
 ros2 run midterm_behavior <TODO>
 ```
 
-Launch arguments: `rviz:=false`, `headless:=true` (no Gazebo GUI), `obstacle:=true` (low crate in aisle 1), `x:=` / `y:=` / `yaw:=` (spawn pose), `world:=<path to .sdf>`.
+Launch arguments: `rviz:=false`, `headless:=true` (no Gazebo GUI), `x:=` / `y:=` / `yaw:=` (spawn pose), `world:=<path to .sdf>`.
 
 ## Nodes
 
@@ -83,4 +83,4 @@ Unit tests: `colcon test --packages-select midterm_behavior` (fruit detection on
 | 2D LiDAR    | `/scan` | `sensor_msgs/msg/LaserScan` | RViz (LaserScan) | TODO |
 | IMU         | `/imu`  | `sensor_msgs/msg/Imu`       | RViz (rviz_imu_plugin), rqt_plot | TODO |
 | Camera      | `/camera/image_raw`, `/camera/camera_info` | `sensor_msgs/msg/Image`, `CameraInfo` | RViz (Image), rqt_image_view | TODO |
-| Depth camera | `/depth_camera/points`, `/depth_camera/depth_image` | `sensor_msgs/msg/PointCloud2`, `Image` | RViz (PointCloud2, Image) | TODO |
+| TODO (4th sensor type) | TODO | TODO | TODO | TODO |

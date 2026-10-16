@@ -13,15 +13,10 @@ and continues along the next row. It stops if something blocks its path.
 | 2D LiDAR | Distance to the row (P-control), end-of-row detection | `/scan` (10 Hz, 360 samples, 0.20–8 m; idx back=0, right=90, front=180, left=270) | `sensor_msgs/msg/LaserScan` | RViz LaserScan |
 | Camera (right side) | Ripe (red) fruit detection (HSV mask) | `/camera/image_raw` (640×480, 15 Hz, HFOV 1.3 rad, frame camera_optical_link) | `sensor_msgs/msg/Image` | rqt_image_view / RViz Image (+ debug mask image) |
 | IMU | Heading (yaw) to finish the 180° arc U-turn, tilt monitoring | `/imu` (100 Hz; orientation is relative to the spawn heading → use yaw *change*) | `sensor_msgs/msg/Imu` | RViz Imu plugin / rqt_plot |
-| Depth camera (front, 15° down) | Obstacles in front, incl. low ones below the LiDAR plane → emergency stop | `/depth_camera/points`, `/depth_camera/depth_image` (320×240, 10 Hz, 0.1–4 m) | `sensor_msgs/msg/PointCloud2`, `sensor_msgs/msg/Image` (32FC1) | RViz PointCloud2 + Image |
+| **TBD (4th type)** | Required for a 3-person group (members + 1). Depth camera was tried and removed on 2026-10-16 | – | – | – |
 
 Notes:
-- Why a depth camera in addition to the LiDAR: the 2D LiDAR scans a single plane at 0.35 m (plant
-  height, needed for row following). A low crate (0.25 m) in the aisle is invisible to it; the depth
-  camera sees it (verified: LiDAR front = 6.35 m wall, depth camera = crate at 0.54 m).
-- The depth camera is a depth sensor (no RGB stream); the side RGB camera is a separate sensor type.
-- gz `depth_camera` publishes the depth image on `<topic>` and the cloud on `<topic>/points`; the cloud
-  uses the x-forward `depth_camera_link` frame.
+- A 4th sensor type is still required (3 members + 1); to be chosen later.
 - Odometry from the drive plugin does not count as a sensor type.
 
 ## Behavior (state machine, single node)
@@ -34,10 +29,10 @@ Notes:
      │   └──────────(yaw turned 180° [IMU])──────┐
      ├──(LiDAR: row side lost = end of row)──▶ U_TURN
      │
-     └──(depth camera: points in front box closer than d_stop, any state)──▶ OBSTACLE_STOP ──(clear)──▶ previous state
+     └──(LiDAR front sector: closer than d_stop, any state)──▶ OBSTACLE_STOP ──(clear)──▶ previous state
 ```
 
-- Inputs: `/scan`, `/camera/image_raw`, `/imu`, `/depth_camera/points`
+- Inputs: `/scan`, `/fruit_detector/fruit` (from `/camera/image_raw`), `/imu`
 - Output: `/cmd_vel` (`geometry_msgs/msg/Twist`)
 - Optional: `/fruit_detections` (counter / marker) for the demo and report
 
@@ -61,7 +56,7 @@ Notes:
    │   ↑ ╭─┴─╮ ↓   │        ╭─╮ U-turn: arc right around R2's end
 ```
 
-- LiDAR on top (360°), depth camera low on the front face (tilted 15° down), IMU inside the chassis near the center.
+- LiDAR on top (360°), IMU inside the chassis near the center.
 
 ### Dimensions (agreed 2026-10-16)
 
@@ -75,7 +70,6 @@ Units: m, kg. Frames follow REP-103 (x forward, y left, z up). Right side = −y
 | 4 × wheel | cylinder r = 0.075, width 0.05 | x = ±0.18, y = ±0.15, z = 0 | 0.5 each |
 | `lidar_link` | cylinder r = 0.04, h = 0.05 on a short mast | x = 0.10, z ≈ 0.27 (≈ 0.35 m above ground) | 0.2 |
 | `camera_link` | box 0.03 × 0.08 × 0.03 on a side mast | x = 0.0, y = −0.15, z ≈ 0.33 (≈ 0.40 m above ground), yaw = −90° (looks right) | 0.1 |
-| `depth_camera_link` | box 0.03 × 0.10 × 0.03 | x = 0.29, z = 0.10 (≈ 0.18 m above ground), pitch = 15° down | 0.1 |
 | `imu_link` | – | at `base_link` origin | – |
 
 Derived values:
@@ -90,7 +84,6 @@ base_footprint → base_link ─┬─ chassis
                             ├─ front_left_wheel / front_right_wheel / rear_left_wheel / rear_right_wheel
                             ├─ lidar_link
                             ├─ camera_link → camera_optical_link
-                            ├─ depth_camera_link
                             └─ imu_link
 odom → base_footprint   (from DiffDrive odometry)
 ```
@@ -111,7 +104,7 @@ odom → base_footprint   (from DiffDrive odometry)
 ## World (to be built)
 
 - 2–3 parallel rows of plant models (green cylinders/boxes), red and green spheres as fruit
-- Optional low crate (0.30 × 0.40 × 0.25) in aisle 1 for the obstacle-stop demo: `obstacle:=true` (`obstacle_x`, `obstacle_y`)
+- Optional obstacle in an aisle for the obstacle-stop demo (to be added)
 
 ## Responsibilities (draft)
 
@@ -120,4 +113,4 @@ odom → base_footprint   (from DiffDrive odometry)
 | Member 1 | LiDAR | |
 | Member 2 | Camera | |
 | Member 3 | IMU | |
-| Shared | Depth camera (additional sensor) | |
+| Shared | TBD (additional sensor) | |
