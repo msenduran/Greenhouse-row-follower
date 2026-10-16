@@ -62,7 +62,7 @@ ros2 topic pub /cmd_vel geometry_msgs/msg/Twist "{linear: {x: 0.3}, angular: {z:
 ros2 run midterm_behavior <TODO>
 ```
 
-Launch arguments: `rviz:=false`, `headless:=true` (no Gazebo GUI), `x:=` / `y:=` / `yaw:=` (spawn pose), `world:=<path to .sdf>`.
+Launch arguments: `rviz:=false`, `headless:=true` (no Gazebo GUI), `obstacle:=true` (low crate in aisle 1), `x:=` / `y:=` / `yaw:=` (spawn pose), `world:=<path to .sdf>`.
 
 ## Sensors
 
@@ -71,4 +71,4 @@ Launch arguments: `rviz:=false`, `headless:=true` (no Gazebo GUI), `x:=` / `y:=`
 | 2D LiDAR    | `/scan` | `sensor_msgs/msg/LaserScan` | RViz (LaserScan) | TODO |
 | IMU         | `/imu`  | `sensor_msgs/msg/Imu`       | RViz (rviz_imu_plugin), rqt_plot | TODO |
 | Camera      | `/camera/image_raw`, `/camera/camera_info` | `sensor_msgs/msg/Image`, `CameraInfo` | RViz (Image), rqt_image_view | TODO |
-| TODO        | TODO  | TODO         | TODO          | TODO        |
+| Depth camera | `/depth_camera/points`, `/depth_camera/depth_image` | `sensor_msgs/msg/PointCloud2`, `Image` | RViz (PointCloud2, Image) | TODO |

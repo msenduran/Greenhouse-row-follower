@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!-- Low harvest crate (0.25 m tall): below the LiDAR plane (0.35 m), seen only by the depth camera -->
+<sdf version="1.9">
+  <model name="crate">
+    <static>true</static>
+    <link name="link">
+      <pose>0 0 0.125 0 0 0</pose>
+      <collision name="collision">
+        <geometry><box><size>0.30 0.40 0.25</size></box></geometry>
+      </collision>
+      <visual name="visual">
+        <geometry><box><size>0.30 0.40 0.25</size></box></geometry>
+        <material><ambient>0.85 0.55 0.15 1</ambient><diffuse>0.85 0.55 0.15 1</diffuse></material>
+      </visual>
+    </link>
+  </model>
+</sdf>

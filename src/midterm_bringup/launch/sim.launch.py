@@ -23,6 +23,7 @@ def generate_launch_description():
     x = LaunchConfiguration('x')
     y = LaunchConfiguration('y')
     yaw = LaunchConfiguration('yaw')
+    obstacle = LaunchConfiguration('obstacle')
 
     xacro_file = os.path.join(description_share, 'urdf', 'greenhouse_bot.urdf.xacro')
     # Process xacro in Python (a shell 'xacro <path>' command breaks on paths with spaces)
@@ -59,6 +60,20 @@ def generate_launch_description():
         output='screen',
     )
 
+    # Optional low crate in the aisle, for the depth camera obstacle-stop demo
+    spawn_obstacle = Node(
+        package='ros_gz_sim',
+        executable='create',
+        arguments=[
+            '-file', os.path.join(bringup_share, 'models', 'crate.sdf'),
+            '-name', 'crate',
+            '-x', LaunchConfiguration('obstacle_x'), '-y', LaunchConfiguration('obstacle_y'),
+            '-z', '0.0',
+        ],
+        condition=IfCondition(obstacle),
+        output='screen',
+    )
+
     bridge = Node(
         package='ros_gz_bridge',
         executable='parameter_bridge',
@@ -89,9 +104,14 @@ def generate_launch_description():
         DeclareLaunchArgument('x', default_value='-0.5'),
         DeclareLaunchArgument('y', default_value='0.65'),
         DeclareLaunchArgument('yaw', default_value='0.0'),
+        DeclareLaunchArgument('obstacle', default_value='false',
+                              description='Spawn a low crate in aisle 1'),
+        DeclareLaunchArgument('obstacle_x', default_value='3.0'),
+        DeclareLaunchArgument('obstacle_y', default_value='0.65'),
         gazebo,
         robot_state_publisher,
         spawn_robot,
+        spawn_obstacle,
         bridge,
         rviz_node,
     ])

@@ -3,7 +3,7 @@ project(midterm_bringup)
 
 find_package(ament_cmake REQUIRED)
 
-install(DIRECTORY launch worlds config
+install(DIRECTORY launch worlds config models
   DESTINATION share/${PROJECT_NAME}
 )
 
