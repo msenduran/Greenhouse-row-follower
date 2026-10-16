@@ -136,6 +136,6 @@ git push
 git log --oneline -10
 ```
 
-- Repo: https://github.com/msenduran/MidtermProject
+- Repo: https://github.com/msenduran/Greenhouse-row-follower
 - Commit mesajlarına Claude imzası (`Co-Authored-By`) eklenmez.
 - `build/`, `install/`, `log/`, `frames*.pdf` gitignore'da.

@@ -1,4 +1,6 @@
-# BIMU4101 – Mobile Robotics Midterm Project
+# Greenhouse Row Follower
+
+BIMU4101 – Introduction to Mobile Robotics, Midterm Project
 
 > **Greenhouse row follower:** a 4-wheel skid-steer robot that drives between greenhouse plant rows,
 > keeps a fixed distance to the row, detects ripe (red) fruit and makes U-turns at the row ends.
@@ -40,8 +42,8 @@ Quick command reference (build, run, test, troubleshooting): [COMMANDS.md](COMMA
 sudo apt install ros-lyrical-ros-gz ros-lyrical-xacro ros-lyrical-robot-state-publisher \
                  ros-lyrical-rviz2 ros-lyrical-teleop-twist-keyboard
 
-git clone <REPO_URL> ~/midterm_ws
-cd ~/midterm_ws
+git clone https://github.com/msenduran/Greenhouse-row-follower.git ~/greenhouse_ws   # the repo is the workspace
+cd ~/greenhouse_ws
 rosdep install --from-paths src --ignore-src -y
 colcon build --symlink-install
 source install/setup.bash
