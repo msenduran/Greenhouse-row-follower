@@ -18,6 +18,7 @@ setup(
     license='MIT',
     entry_points={
         'console_scripts': [
+            'wasd_teleop = midterm_behavior.wasd_teleop:main',
             # 'behavior_node = midterm_behavior.behavior_node:main',
         ],
     },
