@@ -20,7 +20,7 @@ setup(
         'console_scripts': [
             'wasd_teleop = midterm_behavior.wasd_teleop:main',
             'fruit_detector = midterm_behavior.fruit_detector:main',
-            # 'behavior_node = midterm_behavior.behavior_node:main',
+            'row_follower = midterm_behavior.row_follower:main',
         ],
     },
 )

@@ -61,20 +61,24 @@ ros2 topic pub /cmd_vel geometry_msgs/msg/Twist "{linear: {x: 0.3}, angular: {z:
 # Fruit detector (started by sim.launch.py; debug view):
 ros2 run rqt_image_view rqt_image_view /fruit_detector/debug_image
 
-# TODO: behavior node
-ros2 run midterm_behavior <TODO>
+# Autonomous behavior: start it together with the simulation ...
+ros2 launch midterm_bringup sim.launch.py behavior:=true
+# ... or separately, once the simulation is running
+ros2 run midterm_behavior row_follower --ros-args -p use_sim_time:=true
+ros2 topic echo /behavior/state
 ```
 
-Launch arguments: `rviz:=false`, `headless:=true` (no Gazebo GUI), `x:=` / `y:=` / `yaw:=` (spawn pose), `world:=<path to .sdf>`.
+Launch arguments: `behavior:=true` (start the row follower), `rviz:=false`, `headless:=true` (no Gazebo GUI), `x:=` / `y:=` / `yaw:=` (spawn pose), `world:=<path to .sdf>`.
 
 ## Nodes
 
 | Node | Package | Subscribes | Publishes |
 |------|---------|------------|-----------|
 | `fruit_detector` | midterm_behavior | `/camera/image_raw` | `/fruit_detector/fruit` (`geometry_msgs/PointStamped`: x = horizontal offset −1..1, y = vertical offset, z = area ratio; only when a ripe fruit is seen), `/fruit_detector/debug_image` |
+| `row_follower` | midterm_behavior | `/scan`, `/imu`, `/fruit_detector/fruit`, `/odom` | `/cmd_vel`, `/behavior/state` (`std_msgs/String`), `/behavior/markers` (RViz: state text, marked fruit) |
 | `wasd_teleop` | midterm_behavior | – | `/cmd_vel` |
 
-Unit tests: `colcon test --packages-select midterm_behavior` (fruit detection on synthetic images).
+Unit tests: `colcon test --packages-select midterm_behavior` (fruit detection on synthetic images, row line fitting).
 
 ## Sensors
 

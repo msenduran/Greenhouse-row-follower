@@ -20,6 +20,7 @@ def generate_launch_description():
     world = LaunchConfiguration('world')
     rviz = LaunchConfiguration('rviz')
     headless = LaunchConfiguration('headless')
+    behavior = LaunchConfiguration('behavior')
     x = LaunchConfiguration('x')
     y = LaunchConfiguration('y')
     yaw = LaunchConfiguration('yaw')
@@ -76,6 +77,14 @@ def generate_launch_description():
         output='screen',
     )
 
+    row_follower = Node(
+        package='midterm_behavior',
+        executable='row_follower',
+        parameters=[{'use_sim_time': True}],
+        condition=IfCondition(behavior),
+        output='screen',
+    )
+
     rviz_node = Node(
         package='rviz2',
         executable='rviz2',
@@ -91,6 +100,9 @@ def generate_launch_description():
             description='Gazebo world file'),
         DeclareLaunchArgument('rviz', default_value='true', description='Open RViz'),
         DeclareLaunchArgument(
+            'behavior', default_value='false',
+            description='Start the row follower behavior node'),
+        DeclareLaunchArgument(
             'headless', default_value='false', description='Run Gazebo server only (no GUI)'),
         # Start in aisle 1, heading +x, with the middle row on the right
         DeclareLaunchArgument('x', default_value='-0.5'),
@@ -101,5 +113,6 @@ def generate_launch_description():
         spawn_robot,
         bridge,
         fruit_detector,
+        row_follower,
         rviz_node,
     ])

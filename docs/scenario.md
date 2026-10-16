@@ -19,22 +19,45 @@ Notes:
 - A 4th sensor type is still required (3 members + 1); to be chosen later.
 - Odometry from the drive plugin does not count as a sensor type.
 
-## Behavior (state machine, single node)
+## Behavior: `row_follower` node (state machine)
 
 ```
-          ┌──────────────────────────────────────────────┐
-          ▼                                              │
-   ROW_FOLLOW ──(camera: red fruit centered)──▶ FRUIT_STOP (wait N s, log/mark) ─┘
-     │   ▲
-     │   └──────────(yaw turned 180° [IMU])──────┐
-     ├──(LiDAR: row side lost = end of row)──▶ U_TURN
-     │
-     └──(LiDAR front sector: closer than d_stop, any state)──▶ OBSTACLE_STOP ──(clear)──▶ previous state
+             ┌────────────────────────────────────────────────────────────┐
+             ▼                                                            │
+   ROW_FOLLOW ──(fruit centered in camera, |offset| < 0.15)──▶ FRUIT_STOP (3 s, count, mark) ─┘
+     │    ▲
+     │    └───(IMU yaw = row heading + 180°)───┐
+     ├──(LiDAR right side clear = end of row)──▶ U_TURN (advance 0.15 m, arc right r = 0.65 m)
+     ├──(rows_to_cover rows done)──▶ DONE
+     └──(LiDAR front ±20° < 0.45 m, any state)──▶ OBSTACLE_STOP ──(clear for 1 s)──▶ previous state
 ```
 
-- Inputs: `/scan`, `/fruit_detector/fruit` (from `/camera/image_raw`), `/imu`
-- Output: `/cmd_vel` (`geometry_msgs/msg/Twist`)
-- Optional: `/fruit_detections` (counter / marker) for the demo and report
+| Input | Message type | Used for |
+|-------|--------------|----------|
+| `/scan` | `sensor_msgs/msg/LaserScan` | line fit of the right sector (−135°…−45°, ≤ 1.2 m) → row distance + angle; right beam (−100°…−80°) empty within 1.0 m → end of row; front ±20° → obstacle |
+| `/fruit_detector/fruit` | `geometry_msgs/msg/PointStamped` | horizontal offset of a ripe fruit in the side camera image |
+| `/imu` | `sensor_msgs/msg/Imu` | yaw: heading reference while following, U-turn end condition |
+| `/odom` | `nav_msgs/msg/Odometry` | 0.15 m advance before the arc, marker positions |
+
+| Output | Message type |
+|--------|--------------|
+| `/cmd_vel` | `geometry_msgs/msg/Twist` |
+| `/behavior/state` | `std_msgs/msg/String` |
+| `/behavior/markers` | `visualization_msgs/msg/MarkerArray` (state text above the robot, red spheres for marked fruit) |
+
+Decision rules:
+- **Row following:** `angular.z = 2.5·(0.45 − d) + 1.5·α`, clamped to ±0.6 rad/s, `linear.x = 0.25 m/s`
+  (`d` = distance to the fitted row line, `α` = row angle). Fits whose points are not on one line
+  (rms > 3 cm, e.g. the row's end face is visible) are rejected → drive straight.
+- **Fruit:** stop when the fruit is within ±15 % of the image center; after marking, the same fruit is
+  ignored until it leaves the view (no detection for 0.5 s).
+- **U-turn:** the target yaw is the heading recorded while driving parallel to the row + 180°, so
+  drifting at the row end does not change the total turn.
+- **Row acquired:** the end-of-row check and the controller only run once the row has been seen
+  directly beside the robot (start position and right after a U-turn → drive straight).
+
+Result in simulation (default start, `rows_to_cover:=2`): both faces of the middle row covered,
+**5/5 ripe fruit marked, 0 false positives**, stops in DONE after the second row.
 
 ## Robot
 
