@@ -58,11 +58,23 @@ ros2 run teleop_twist_keyboard teleop_twist_keyboard
 # or
 ros2 topic pub /cmd_vel geometry_msgs/msg/Twist "{linear: {x: 0.3}, angular: {z: 0.0}}"
 
+# Fruit detector (started by sim.launch.py; debug view):
+ros2 run rqt_image_view rqt_image_view /fruit_detector/debug_image
+
 # TODO: behavior node
 ros2 run midterm_behavior <TODO>
 ```
 
 Launch arguments: `rviz:=false`, `headless:=true` (no Gazebo GUI), `obstacle:=true` (low crate in aisle 1), `x:=` / `y:=` / `yaw:=` (spawn pose), `world:=<path to .sdf>`.
+
+## Nodes
+
+| Node | Package | Subscribes | Publishes |
+|------|---------|------------|-----------|
+| `fruit_detector` | midterm_behavior | `/camera/image_raw` | `/fruit_detector/fruit` (`geometry_msgs/PointStamped`: x = horizontal offset −1..1, y = vertical offset, z = area ratio; only when a ripe fruit is seen), `/fruit_detector/debug_image` |
+| `wasd_teleop` | midterm_behavior | – | `/cmd_vel` |
+
+Unit tests: `colcon test --packages-select midterm_behavior` (fruit detection on synthetic images).
 
 ## Sensors
 

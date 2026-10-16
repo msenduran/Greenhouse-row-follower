@@ -84,6 +84,13 @@ def generate_launch_description():
         output='screen',
     )
 
+    fruit_detector = Node(
+        package='midterm_behavior',
+        executable='fruit_detector',
+        parameters=[{'use_sim_time': True}],
+        output='screen',
+    )
+
     rviz_node = Node(
         package='rviz2',
         executable='rviz2',
@@ -113,5 +120,6 @@ def generate_launch_description():
         spawn_robot,
         spawn_obstacle,
         bridge,
+        fruit_detector,
         rviz_node,
     ])
