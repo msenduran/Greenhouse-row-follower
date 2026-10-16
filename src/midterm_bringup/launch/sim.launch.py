@@ -1,0 +1,86 @@
+"""Start the greenhouse world, spawn the robot, bridge topics and open RViz."""
+
+import os
+
+from ament_index_python.packages import get_package_share_directory
+from launch import LaunchDescription
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
+from launch.conditions import IfCondition
+from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.substitutions import Command, LaunchConfiguration
+from launch_ros.actions import Node
+from launch_ros.parameter_descriptions import ParameterValue
+
+
+def generate_launch_description():
+    bringup_share = get_package_share_directory('midterm_bringup')
+    description_share = get_package_share_directory('midterm_description')
+    ros_gz_sim_share = get_package_share_directory('ros_gz_sim')
+
+    world = LaunchConfiguration('world')
+    rviz = LaunchConfiguration('rviz')
+    x = LaunchConfiguration('x')
+    y = LaunchConfiguration('y')
+    yaw = LaunchConfiguration('yaw')
+
+    xacro_file = os.path.join(description_share, 'urdf', 'greenhouse_bot.urdf.xacro')
+    robot_description = ParameterValue(Command(['xacro ', xacro_file]), value_type=str)
+
+    gazebo = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(ros_gz_sim_share, 'launch', 'gz_sim.launch.py')),
+        launch_arguments={'gz_args': ['-r ', world], 'on_exit_shutdown': 'true'}.items(),
+    )
+
+    robot_state_publisher = Node(
+        package='robot_state_publisher',
+        executable='robot_state_publisher',
+        parameters=[{'robot_description': robot_description, 'use_sim_time': True}],
+        output='screen',
+    )
+
+    spawn_robot = Node(
+        package='ros_gz_sim',
+        executable='create',
+        arguments=[
+            '-topic', 'robot_description',
+            '-name', 'greenhouse_bot',
+            '-x', x, '-y', y, '-z', '0.05', '-Y', yaw,
+        ],
+        output='screen',
+    )
+
+    bridge = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        parameters=[{
+            'config_file': os.path.join(bringup_share, 'config', 'bridge.yaml'),
+            'use_sim_time': True,
+        }],
+        output='screen',
+    )
+
+    rviz_node = Node(
+        package='rviz2',
+        executable='rviz2',
+        arguments=['-d', os.path.join(description_share, 'rviz', 'greenhouse_bot.rviz')],
+        parameters=[{'use_sim_time': True}],
+        condition=IfCondition(rviz),
+        output='screen',
+    )
+
+    return LaunchDescription([
+        DeclareLaunchArgument(
+            'world', default_value=os.path.join(bringup_share, 'worlds', 'greenhouse.sdf'),
+            description='Gazebo world file'),
+        DeclareLaunchArgument('rviz', default_value='true', description='Open RViz'),
+        # Start in aisle 1, heading +x, with the middle row on the right
+        DeclareLaunchArgument('x', default_value='-0.5'),
+        DeclareLaunchArgument('y', default_value='0.65'),
+        DeclareLaunchArgument('yaw', default_value='0.0'),
+        gazebo,
+        robot_state_publisher,
+        spawn_robot,
+        bridge,
+        rviz_node,
+    ])

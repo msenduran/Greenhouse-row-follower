@@ -1,6 +1,8 @@
 # BIMU4101 – Mobile Robotics Midterm Project
 
-> TODO: robot name and one-line task description
+> **Greenhouse row follower:** a 4-wheel skid-steer robot that drives between greenhouse plant rows,
+> keeps a fixed distance to the row, detects ripe (red) fruit and makes U-turns at the row ends.
+> Design details: [docs/scenario.md](docs/scenario.md)
 
 Custom mobile robot modeled in URDF/Xacro, simulated in Gazebo and controlled through ROS 2.
 
@@ -33,8 +35,8 @@ docs/                      # Report notes, screenshots, demo video links
 ## Installation
 
 ```bash
-sudo apt install ros-lyrical-ros-gz ros-lyrical-xacro ros-lyrical-robot-state-publisher
-# TODO: add other dependencies
+sudo apt install ros-lyrical-ros-gz ros-lyrical-xacro ros-lyrical-robot-state-publisher \
+                 ros-lyrical-rviz2 ros-lyrical-teleop-twist-keyboard
 
 git clone <REPO_URL> ~/midterm_ws
 cd ~/midterm_ws
@@ -46,12 +48,19 @@ source install/setup.bash
 ## Running
 
 ```bash
-# TODO: world + robot spawn + RViz in a single launch file
-ros2 launch midterm_bringup <TODO>.launch.py
+# Greenhouse world + robot spawn + bridge + RViz (single launch file)
+ros2 launch midterm_bringup sim.launch.py
+
+# Drive manually (second terminal)
+ros2 run teleop_twist_keyboard teleop_twist_keyboard
+# or
+ros2 topic pub /cmd_vel geometry_msgs/msg/Twist "{linear: {x: 0.3}, angular: {z: 0.0}}"
 
 # TODO: behavior node
 ros2 run midterm_behavior <TODO>
 ```
+
+Launch arguments: `rviz:=false`, `x:=` / `y:=` / `yaw:=` (spawn pose), `world:=<path to .sdf>`.
 
 ## Sensors
 
