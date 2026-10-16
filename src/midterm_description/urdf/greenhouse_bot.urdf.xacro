@@ -106,6 +106,7 @@
   <!-- Sensors -->
   <xacro:include filename="$(find midterm_description)/urdf/lidar.xacro"/>
   <xacro:include filename="$(find midterm_description)/urdf/imu.xacro"/>
+  <xacro:include filename="$(find midterm_description)/urdf/camera.xacro"/>
 
   <xacro:include filename="$(find midterm_description)/urdf/gazebo.xacro"/>
 

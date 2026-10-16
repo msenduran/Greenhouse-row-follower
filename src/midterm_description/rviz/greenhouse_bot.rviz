@@ -67,6 +67,14 @@ Visualization Manager:
       Acceleration properties:
         Enable acceleration: false
       Value: true
+    - Class: rviz_default_plugins/Image
+      Name: Camera
+      Enabled: true
+      Topic:
+        Value: /camera/image_raw
+        Reliability Policy: Best Effort
+      Normalize Range: true
+      Value: true
   Enabled: true
   Global Options:
     Fixed Frame: odom

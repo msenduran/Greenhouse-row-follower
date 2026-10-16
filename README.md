@@ -70,4 +70,5 @@ Launch arguments: `rviz:=false`, `headless:=true` (no Gazebo GUI), `x:=` / `y:=`
 |-------------|-------|--------------|---------------|-------------|
 | 2D LiDAR    | `/scan` | `sensor_msgs/msg/LaserScan` | RViz (LaserScan) | TODO |
 | IMU         | `/imu`  | `sensor_msgs/msg/Imu`       | RViz (rviz_imu_plugin), rqt_plot | TODO |
+| Camera      | `/camera/image_raw`, `/camera/camera_info` | `sensor_msgs/msg/Image`, `CameraInfo` | RViz (Image), rqt_image_view | TODO |
 | TODO        | TODO  | TODO         | TODO          | TODO        |
