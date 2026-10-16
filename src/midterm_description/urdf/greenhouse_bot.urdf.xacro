@@ -103,6 +103,9 @@
   <xacro:wheel prefix="rear_left" x_sign="-1" y_sign="1"/>
   <xacro:wheel prefix="rear_right" x_sign="-1" y_sign="-1"/>
 
+  <!-- Sensors -->
+  <xacro:include filename="$(find midterm_description)/urdf/lidar.xacro"/>
+
   <xacro:include filename="$(find midterm_description)/urdf/gazebo.xacro"/>
 
 </robot>

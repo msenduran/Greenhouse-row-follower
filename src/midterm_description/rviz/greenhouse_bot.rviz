@@ -34,6 +34,18 @@ Visualization Manager:
       Shape:
         Value: Arrow
       Value: true
+    - Class: rviz_default_plugins/LaserScan
+      Name: LiDAR
+      Enabled: true
+      Topic:
+        Value: /scan
+        Reliability Policy: Best Effort
+      Style: Spheres
+      Size (m): 0.03
+      Color Transformer: FlatColor
+      Color: 255; 60; 60
+      Decay Time: 0
+      Value: true
   Enabled: true
   Global Options:
     Fixed Frame: odom

@@ -68,4 +68,5 @@ Launch arguments: `rviz:=false`, `headless:=true` (no Gazebo GUI), `x:=` / `y:=`
 
 | Sensor type | Topic | Message type | Visualization | Responsible |
 |-------------|-------|--------------|---------------|-------------|
+| 2D LiDAR    | `/scan` | `sensor_msgs/msg/LaserScan` | RViz (LaserScan) | TODO |
 | TODO        | TODO  | TODO         | TODO          | TODO        |
