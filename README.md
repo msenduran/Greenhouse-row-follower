@@ -60,7 +60,7 @@ ros2 topic pub /cmd_vel geometry_msgs/msg/Twist "{linear: {x: 0.3}, angular: {z:
 ros2 run midterm_behavior <TODO>
 ```
 
-Launch arguments: `rviz:=false`, `x:=` / `y:=` / `yaw:=` (spawn pose), `world:=<path to .sdf>`.
+Launch arguments: `rviz:=false`, `headless:=true` (no Gazebo GUI), `x:=` / `y:=` / `yaw:=` (spawn pose), `world:=<path to .sdf>`.
 
 ## Sensors
 

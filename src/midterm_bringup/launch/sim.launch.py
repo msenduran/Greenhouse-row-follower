@@ -7,9 +7,9 @@ from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import Command, LaunchConfiguration
+from launch.substitutions import LaunchConfiguration, PythonExpression
 from launch_ros.actions import Node
-from launch_ros.parameter_descriptions import ParameterValue
+import xacro
 
 
 def generate_launch_description():
@@ -19,17 +19,26 @@ def generate_launch_description():
 
     world = LaunchConfiguration('world')
     rviz = LaunchConfiguration('rviz')
+    headless = LaunchConfiguration('headless')
     x = LaunchConfiguration('x')
     y = LaunchConfiguration('y')
     yaw = LaunchConfiguration('yaw')
 
     xacro_file = os.path.join(description_share, 'urdf', 'greenhouse_bot.urdf.xacro')
-    robot_description = ParameterValue(Command(['xacro ', xacro_file]), value_type=str)
+    # Process xacro in Python (a shell 'xacro <path>' command breaks on paths with spaces)
+    robot_description = xacro.process_file(xacro_file).toxml()
 
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(ros_gz_sim_share, 'launch', 'gz_sim.launch.py')),
-        launch_arguments={'gz_args': ['-r ', world], 'on_exit_shutdown': 'true'}.items(),
+        # gz_sim.launch.py runs gz through a shell: quote the world path (it may contain spaces)
+        launch_arguments={
+            'gz_args': [
+                PythonExpression(["'-s --headless-rendering ' if '", headless, "' == 'true' else ''"]),
+                '-r "', world, '"',
+            ],
+            'on_exit_shutdown': 'true',
+        }.items(),
     )
 
     robot_state_publisher = Node(
@@ -74,6 +83,8 @@ def generate_launch_description():
             'world', default_value=os.path.join(bringup_share, 'worlds', 'greenhouse.sdf'),
             description='Gazebo world file'),
         DeclareLaunchArgument('rviz', default_value='true', description='Open RViz'),
+        DeclareLaunchArgument(
+            'headless', default_value='false', description='Run Gazebo server only (no GUI)'),
         # Start in aisle 1, heading +x, with the middle row on the right
         DeclareLaunchArgument('x', default_value='-0.5'),
         DeclareLaunchArgument('y', default_value='0.65'),
