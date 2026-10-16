@@ -51,7 +51,7 @@ source install/setup.bash
 # Greenhouse world + robot spawn + bridge + RViz (single launch file)
 ros2 launch midterm_bringup sim.launch.py
 
-# Drive manually with WASD (second terminal): hold w/a/s/d, q/e = forward arcs, +/- = speed
+# Drive manually with WASD (second terminal): hold w/a/s/d, q/e = forward arcs, PgUp/PgDn = speed
 ros2 run midterm_behavior wasd_teleop
 # or the standard teleop (i/j/k/l keys)
 ros2 run teleop_twist_keyboard teleop_twist_keyboard

@@ -1,5 +1,6 @@
 """Keyboard teleop with WASD keys: hold a key to drive, release to stop."""
 
+import os
 import select
 import sys
 import termios
@@ -15,7 +16,7 @@ HELP = """
 WASD teleop - hold a key to drive, release to stop
 ---------------------------------------------------
         w                 q / e : forward + turn left / right
-    a   s   d             + / - : speed up / down (10 %)
+    a   s   d       PgUp / PgDn : speed up / down (10 %)
                           space : stop
                           Ctrl+C: quit
 """
@@ -30,6 +31,10 @@ BINDINGS = {
     'e': (1.0, -1.0),
     ' ': (0.0, 0.0),
 }
+
+# Escape sequences sent by the terminal
+PAGE_UP = '\x1b[5~'
+PAGE_DOWN = '\x1b[6~'
 
 
 class WasdTeleop(Node):
@@ -55,8 +60,19 @@ class WasdTeleop(Node):
 
 
 def read_key(timeout):
-    ready, _, _ = select.select([sys.stdin], [], [], timeout)
-    return sys.stdin.read(1) if ready else None
+    """Return one key (a single char or a full escape sequence), or None on timeout."""
+    fd = sys.stdin.fileno()
+    if not select.select([fd], [], [], timeout)[0]:
+        return None
+    # Unbuffered reads: buffered stdin would hide the rest of an escape sequence from select()
+    key = os.read(fd, 1).decode(errors='ignore')
+    if key == '\x1b':
+        # Special keys (PgUp, arrows, ...) arrive as ESC followed by a few chars
+        while select.select([fd], [], [], 0.01)[0]:
+            key += os.read(fd, 1).decode(errors='ignore')
+            if key[-1].isalpha() or key[-1] == '~':
+                break
+    return key
 
 
 def main():
@@ -88,11 +104,11 @@ def main():
                 linear_dir, angular_dir = BINDINGS[key]
                 node.publish(linear_dir, angular_dir)
                 moving = key != ' '
-            elif key in '+=':
+            elif key == PAGE_UP:
                 node.linear_speed *= 1.1
                 node.angular_speed *= 1.1
                 node.print_status()
-            elif key in '-_':
+            elif key == PAGE_DOWN:
                 node.linear_speed *= 0.9
                 node.angular_speed *= 0.9
                 node.print_status()
